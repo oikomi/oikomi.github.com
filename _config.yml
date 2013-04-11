@@ -5,8 +5,8 @@ permalink: /posts/:title.html
 exclude:
   - README.md
 
-name: Your Site Name
-host: yourdomain.com
+name: Harold' Blog
+host: oikomi.github.io
 desc: Some description of your site.
 
 custom:
@@ -22,8 +22,8 @@ custom:
 
 meta:
     author:
-        name: Your Name
-        email: your-email@example.com
+        name: Harold Miao
+        email: miaohonghit@gmail.com
         disqus: your-disqus-short-name              # Disqus缩略标识
         gcse: 000346898720731947188:13h55x32l0y     # Google自定义搜索标识ID
         github: your-github-account                 # GitHub账号
