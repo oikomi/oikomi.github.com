@@ -13,6 +13,7 @@ custom:
     category:
         default: Default Category
         another: Another Category
+        数据库(DB): DB Category
     categories:
       - name:  default
         title: Default Category
