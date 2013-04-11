@@ -5,8 +5,8 @@ title: About
 
 ![""](/assets/images/2011-12-23.jpg)
 
-Personal Website: <http://www.ryanuber.com>  
-GitHub: <https://www.github.com/ryanuber>  
+Personal Website: <http://oikomi.github.io>  
+GitHub: <https://www.github.com/oikomi>  
 LinkedIn: <http://www.linkedin.com/pub/ryan-uber/1a/33a/b29>
 
 ## Objective
