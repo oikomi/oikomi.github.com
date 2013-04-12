@@ -87,7 +87,8 @@ JB :
   comments :
     provider : disqus
     disqus :
-      short_name : evcblog
+      #short_name : evcblog
+      short_name : dunderhead
     livefyre :
       site_id : 123
     intensedebate :
