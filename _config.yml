@@ -14,7 +14,7 @@ description_length: 200
 # so be sure to set them if your theme uses them.
 #
 title : Harold's Blog
-address: www.miaohong.org
+address: blog.miaohong.org
 tagline: Time is life.....
 author :
   name : Harold Miao
@@ -32,7 +32,7 @@ start_year: "2012"
 # Else if you are pushing to username.github.com, replace with your username.
 # Finally if you are pushing to a GitHub project page, include the project name at the end.
 #
-production_url : http://www.miaohong.org
+production_url : http://blog.miaohong.org
 
 # All Jekyll-Bootstrap specific configurations are namespaced into this hash
 #
