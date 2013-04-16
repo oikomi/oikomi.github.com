@@ -3,9 +3,8 @@ layout: about
 title: About
 ---
 
-. 技术小虾米.
+. 技术世界遨游.
 
-. 小人物实现小理想.
 
 . ![miaohong at gmail dot com](/image/mail.png)
 
