@@ -1,6 +1,72 @@
----
-theme :
-  name : black
----
-{% include JB/setup %}
-{% include themes/black/default.html %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <title>{{ page.title }} | Yuen's Notebook</title>
+    <!-- main CSS -->
+    <link rel="stylesheet" href="/css/main.css" type="text/css">
+
+    <!-- syntax highlighting CSS -->
+    <link rel="stylesheet" href="/css/syntax.css" type="text/css">
+
+    <!-- Google Analytics -->
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-25694753-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+
+    <script src="/js/keypress.js"></script>
+
+    <meta http-equiv="Pragma" content="no-cache"/>
+    <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate"/> 
+    <meta http-equiv="expires" content="Mon,1 Jan 2001 0:0:0 UTC" />
+
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1><a href="/">{{ site.title }}</a></h1>
+        <strong>
+          <a href="/allposts.html">All <span style="color:rgb(255,0,0);margin-left:0;font-size: 14px;">P</span>osts</a>  &nbsp;|&nbsp; 
+          <a href="/note.html"><span style="color:rgb(255,0,0);margin-left:0;font-size: 14px;">N</span>ote</a>  &nbsp;|&nbsp; 
+          <a href="/book.html"><span style="color:rgb(255,0,0);margin-left:0;font-size: 14px;">B</span>ooks</a>  &nbsp;|&nbsp; 
+          <a href="/about.html"><span style="color:rgb(255,0,0);margin-left:0;font-size: 14px;">A</span>bout</a> 
+        </strong>
+      </div>
+      
+      {{ content }}
+      
+      <br clear="all">
+      
+      <div class="footer">
+        <h1>Recent Posts</h1>
+        <ul class="posts">
+          {% for post in site.posts limit:4 %}
+          <li>
+            <span class="date">{{ post.date | date_to_string }}</span>
+            &raquo; <a href="{{ post.url }}">{{ post.title }}</a>
+            {% endfor %}                
+        </ul>
+
+      </div>
+
+      <br clear="all">
+      
+      <div class="copyright">
+        All For Free
+      </div>
+    </div>
+    <script type="text/javascript">
+      document.onkeypress=keypress;
+    </script>
+  </body>
+</html>
