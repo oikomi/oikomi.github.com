@@ -3,7 +3,7 @@ layout: about
 title: About
 ---
 
-. 技术世界遨游.
+. Detail Makes Failure.
 
 
 . ![miaohong at gmail dot com](/image/mail.png)
