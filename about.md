@@ -5,7 +5,7 @@ title: About
 
 . Detail Makes Failure.
 
-. 个人简历(/image/miaohong_cv.pdf)
+. [个人简历](/image/miaohong_cv.pdf)
 
 . ![miaohong at gmail dot com](/image/mail.png)
 
