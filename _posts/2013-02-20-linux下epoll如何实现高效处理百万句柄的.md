@@ -3,7 +3,6 @@ layout: post
 title: linux下epoll如何实现高效处理百万句柄的
 ---
 
-## linux下epoll如何实现高效处理百万句柄的 ##
 
 **epoll** 是 linux 平台上一种*IO多路复用技术*，可以非常高效的处理数以百万计的socket句柄，比起以前的select和poll效率高大发了。我们用起epoll来都感觉挺爽，确实快，那么，它到底为什么可以高速处理这么多并发连接呢？
 
