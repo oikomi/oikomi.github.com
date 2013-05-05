@@ -5,10 +5,7 @@
 ### 先简单回顾下如何使用C库封装的3个epoll系统调用吧 ###
 
 {% highlight c %}
-int main(int argc,char* argv[])
 int epoll_create(int size);
-  
 int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);  
-
 int epoll_wait(int epfd, struct epoll_event *events,int maxevents, int timeout); 
 {% endhighlight %}
