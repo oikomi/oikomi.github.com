@@ -1,0 +1,209 @@
+%% Inicio del archivo `template-es.tex'.
+%% Copyright 2006-2013 Xavier Danaux (xdanaux@gmail.com).
+%
+% This work may be distributed and/or modified under the
+% conditions of the LaTeX Project Public License version 1.3c,
+% available at http://www.latex-project.org/lppl/.
+
+
+\documentclass[11pt,a4paper,sans]{moderncv}   % opciones posibles incluyen tama帽o de fuente ('10pt', '11pt' and '12pt'), tama帽o de papel ('a4paper', 'letterpaper', 'a5paper', 'legalpaper', 'executivepaper' y 'landscape') y familia de fuentes ('sans' y 'roman')
+
+% temas de moderncv
+\moderncvstyle{banking}                        % las opciones de estilo son 'casual' (por omision),'classic', 'oldstyle' y 'banking'
+\moderncvcolor{blue}                          % opciones de color 'blue' (por omision), 'orange', 'green', 'red', 'purple', 'grey' y 'black'
+%\renewcommand{\familydefault}{\sfdefault}    % para seleccionar la fuente por omision, use '\sfdefault' para la fuente sans serif, '\rmdefault' para la fuente roman, o cualquier nombre de fuente
+%\nopagenumbers{}                             % elimine el comentario para suprimir la numeracion automatica de las paginas para CVs mayores a una pagina
+
+% codificacion de caracteres
+%\usepackage[utf8]{inputenc}                  % reemplace con su codificacion
+%\usepackage{CJKutf8}                         % si necesita usa CJK para redactar su CV en chino, japones o coreano
+
+% ajustes para los margenes de pagina
+\usepackage[scale=0.75]{geometry}
+%\setlength{\hintscolumnwidth}{3cm}           % si desea cambiar el ando de la columna para las fechas
+
+% datos personales
+\firstname{Hong}
+\familyname{Miao}
+%\title{T\'itulo del CV (opcional)}                   % dato opcional, elimine la linea si no desea el dato
+%\address{calle y n\'umero}{c\'odigo postal y ciudad} % dato opcional, elimine la linea si no desea el dato
+\mobile{+86-13414456851}                            % dato opcional, elimine la linea si no desea el dato
+\phone{+86-755-36839866}                             % dato opcional, elimine la linea si no desea el dato
+\fax{+86-755-36839860}                               % dato opcional, elimine la linea si no desea el dato
+\email{miaohonghit@gmail.com}                                 % dato opcional, elimine la linea si no desea el dato
+\homepage{http://blog.miaohong.org/}                           % dato opcional, elimine la linea si no desea el dato
+%\extrainfo{informacion adicional}                    % dato opcional, elimine la linea si no desea el dato
+%\photo[64pt][0.4pt]{picture}                         % '64pt' es la altura a la que la imagen debe ser ajustada, 0.4pt es grosor del marco que lo contiene (eliga 0pt para eliminar el marco) y 'picture' es el nombre del archivo; dato opcional, elimine la linea si no desea el dato
+%\quote{Alguna cita (opcional)}                       % dato opcional, elimine la linea si no desea el dato
+\quote{\textbf{Keyword: }\underline{linux} \underline{Kernel} \underline{Linux Server} \underline{Linux storage} \underline{Security}   \underline{Nginx}   \underline{WAF}  \underline{Network Programming }}
+% para mostrar etiquetas numericas en la bibliografia (por omision no se muestran etiquetas), solo es util si desea incluir citas en en CV
+%\makeatletter
+%\renewcommand*{\bibliographyitemlabel}{\@biblabel{\arabic{enumiv}}}
+%\makeatother
+
+% bibliografia con varias fuentes
+%\usepackage{multibib}
+%\newcites{book,misc}{{Libros},{Otros}}
+%----------------------------------------------------------------------------------
+%            contenido
+%----------------------------------------------------------------------------------
+\begin{document}
+%\begin{CJK*}{UTF8}{gbsn}                     % para redactar el CV en chino usando CJK
+\maketitle
+
+
+\section{Personal Details}
+\cvdoubleitem{Gender}{male}{Date of Birth} {October 25, 1987}
+\cvdoubleitem{Native place }{China, in Anhui Province}  {Apartment}{Shanghai}
+
+
+\section{Objective}
+\begin{itemize}
+\item Linux Server Development
+ \smallskip
+\item Linux Storage, Kernel
+\end{itemize}
+
+\section{Education}
+\cventry{2008/9 -- 2010/12}{Master's degree}{Harbin Institute of Technology}{Automation Engineer Technology/Technician}{}{}  % 第3 到第6编码可留白
+ \begin{itemize}
+ \item First-class scholarship(twice)
+  \item The first prize at provincial level in Northeast District Mathematical modeling competition(2009)
+  \item Merit Student of HIT(2009, 2010)
+  \end{itemize}
+
+\cventry{2004/9 -- 2008/7}{Bachelor's degree}{Harbin Institute of Technology}{ Automation Engineer Technology/Technician}{}{}
+ \begin{itemize}
+ \item People's Scholarship(Seven times)
+  \item postgraduate recommendation(2008)
+%  \item 本科阶段申请一项科技创新基金，后期该项目获得一项国家专利
+  \end{itemize}
+
+
+\section{Skills}
+
+\begin{itemize}
+ \item C/C++ (3 years+ in linux Kernel, Driver and System Programming), Python(1 year+), Java(About half a year), Golang; Familiar with the source code security technology
+ \smallskip
+\item Familiar with the commonly used data structures and algorithms, Familiar with STL, understand Boost
+\smallskip
+\item Familiar with TCP/IP, HTTP; Familiar with Unix/Linux Network Programming; Familiar with scsi protocol, Familiar with linux Kernel storage principle
+\smallskip
+\item Familiar with Mysql; understand MongoDB, Redis
+
+%\smallskip
+%\item 了解mysql以及一些NoSQL（MongoDB）数据库等技术
+\smallskip
+\item Familiar with high-performance server development; Familiar with Nginx(reading the source code)
+%\smallskip
+%\item 熟练掌握基于ARM平台下嵌入式Linux系统开发
+\smallskip
+\item understand Web Security, Cloud Computing, Cloud Storage, agile development
+\smallskip
+\item Have strong interests in new technology, Strong ability of communication in technology
+\smallskip
+ \end{itemize}
+
+
+
+\section{Experience}
+%\begin{itemize}
+%\item \textbf{华为技术有限公司 } 2012.1 - 现在 [ 1年2个月] \\
+%\item \begin{tabular*}{4in}{l@{\extracolsep{\fill}}r} \textbf{华为技术有限公司 }  & 2012/1 - Now [ 1年2个月]\end{tabular*} \\
+\cventry{2012/1 - Now}{software engineer}{\underline{Huawei Technologies}}{Storage research and Cloud security}{}{}
+\smallskip
+%\textbf{任职部门:} 存储研究部、云安全开发部\\
+%\smallskip
+%\textbf{项目一:2012 /5--至今：华为云安全后台引擎开发}\newline
+%\cventry{2012/5 -- Now}{}{项目一:华为云安全后台引擎开发}{}{}{}
+%\subsection{项目一:华为云安全后台引擎开发}
+%\cventry{}{}{}{}{}{工作内容:\newline{}%
+
+\cventry{2011/1 - 2012/1 [ 1 year 1 month ]}{Linux System Development Engineer}{\underline{Emerson Network Power }}{Monitoring software development department}{}{}
+
+\smallskip
+\cventry{2009/12 - 2010/5 [ 0.5 year ]}{System Development Engineer(Intern)}{\underline{Nokia Research Center(China)(Intern) }}{Wearable computing team(Intern)}{}{}
+
+
+
+\section{Project Experience}
+
+\cventry{}{linux/c/Nginx}{WAF(Web Application Firewall) development based on Nginx}{2013/2 - Now }{}{}
+
+ \smallskip
+
+\cventry{}{linux/c++/Python/Mysql/MongoDB}{Cloud security engine development}{2012/5 - 2013/2 }{}{}
+\begin{itemize}
+   \item web2.0 crawling engine
+
+    \begin{itemize}
+      \item[--]Using embedded browser and algorithm based on state diagram transformation model,Invalid state filtering using SVM classifier(\textbf{Apply for a patent for invention})
+      \item[--]Core algorithm based on Crawljax(open source) : http://crawljax.com/
+
+    \end{itemize}
+    \item Host security baseline engine development
+
+    \item Develop a web security scanner in spare time(https://github.com/oikomi/UnitScan)
+
+
+    \end{itemize}
+ \smallskip
+
+\cventry{}{linux Kernel}{IO performance optimization in linux Kernel storage}{2012/1 - 2012/5 }{}{}
+\begin{itemize}
+   \item Researching the linux kernel IO system; find IO performance optimization points
+
+\end{itemize}
+
+   \smallskip
+
+\cventry{}{linux Kernel/c++ Server development}{Centralized monitoring software development}{2011/1 - 2012/1 }{}{}
+\begin{itemize}
+   \item Network library development(linux/C++)
+      \item Server information collection application development(linux/C)
+    \item Switch drive development (Linux Drivers)
+%   \item  嵌入式linux内核移植
+
+\end{itemize}
+
+   \smallskip
+
+\cventry{}{linux Kernel(Driver)}{Wear mobile phone(Intern) }{2009/12 - 2010/5(Intern) }{}{}
+\begin{itemize}
+   \item Driver software development
+
+
+\end{itemize}
+
+
+
+
+
+\section{Languages}
+\cvitemwithcomment{English}{CET-6}{proficient in listening and reading }
+
+\section{Training}
+\cvitemwithcomment{RDPM(like PMP)}{Learning research and development project management}{2013.2-2013.3}
+\cvitemwithcomment{Agile}{Agile development training}{2012.3-2012.4}
+
+
+% Las publicaciones tomadas de un archivo de BibTeX sin usar multibib\renewcommand*{\bibliographyitemlabel}{\@biblabel{\arabic{enumiv}}}
+
+%\nocite{*}
+%\bibliographystyle{plain}
+%\bibliography{publications}                   % 'publications' es el nombre del archivo BibTeX
+
+% Las publicaciones tomadas de un archivo BibTeX usando el paquete multibib
+%\section{Publicaciones}
+%\nocitebook{book1,book2}
+%\bibliographystylebook{plain}
+%\bibliographybook{publications}              % 'publications' es el nombre del archivo BibTeX
+%\nocitemisc{misc1,misc2,misc3}
+%\bibliographystylemisc{plain}
+%\bibliographymisc{publications}              % 'publications' es el nombre del archivo BibTeX
+
+%\clearpage\end{CJK*}                          % si esta redactando su CV en chino usando CJK, \clearpage es requerido por fancyhdr para que funcione correctamente con CJK, aunque esto eliminara la numeracion de pagina al dejar \lastpage como no definido
+\end{document}
+
+
+%% fin del archivo `template-es.tex'.
