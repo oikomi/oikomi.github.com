@@ -9,6 +9,8 @@ title: About
 
 . [个人简历(英文)(请单击下载)](/doc/miaohong_cv_en.pdf)
 
+. [个人发明专利(请单击下载)](/doc/抓取页面的方法和装置.pdf)
+
 . ![miaohong at gmail dot com](/image/mail.png)
 
 . [@github https://github.com/oikomi](https://github.com/oikomi)
