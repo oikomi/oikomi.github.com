@@ -70,8 +70,11 @@ storeAppend(StoreEntry * e, const char *buf, int len)
 {% endhighlight %}
 
 storeGetMemSpace  ----  内存判断，以便是否启动替换机制
+
 stmemAppend  -----  将数据拷贝到_MemObject的data_hdr中
+
 InvokeHandlers  ---- 通过_MemObject的client找到客户端，并将数据发送给所有客户端
+
 storeSwapOut  -----  数据存盘
 
 上面四个业务非常重要
