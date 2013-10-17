@@ -16,14 +16,15 @@ main ---- > storeFsInit
 
 其二：建立fs
 
-```
+{% highlight c %}
 void
 storeFsInit(void)
 {
     storeReplSetup();
     storeFsSetup();
 }
-```
+{% endhighlight %}
+
 首先跟踪storeFsSetup 
 注意该函数是由./store_modules.sh ufs aufs coss null diskd 自动生成，需要编译后才有该函数。
 
