@@ -231,9 +231,10 @@ storeSwapOut(StoreEntry * e)
 }
 {% endhighlight %}
 
-{% highlight java %}
+
 squid有个MaintainMemObject周期执行事件，显然此处不是，所以
 
+{% highlight java %}
 /* start swapping object to disk */
 static void
 storeSwapOutStart(StoreEntry * e)
