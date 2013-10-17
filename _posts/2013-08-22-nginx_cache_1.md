@@ -7,7 +7,7 @@ title: Squid源码分析(一)之基础存储路径
 Squid源码分析(一)之基础存储路径
 =====================
 
-> **NOTE:** 转载请注明(#http://blog.miaohong.org/2013/08/22/nginx_cache_1.html).
+> **NOTE:** 转载[@草依山](http://blog.miaohong.org/2013/08/22/nginx_cache_1.html)
 
 
 main ---- > storeFsInit
