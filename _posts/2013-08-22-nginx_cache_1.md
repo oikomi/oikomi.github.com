@@ -18,7 +18,7 @@ main ---- > storeFsInit
 
 其二：建立fs
 
-{% highlight c %}
+{% highlight java %}
 void
 storeFsInit(void)
 {
@@ -30,7 +30,7 @@ storeFsInit(void)
 首先跟踪storeFsSetup 
 注意该函数是由./store_modules.sh ufs aufs coss null diskd 自动生成，需要编译后才有该函数。
 
-{% highlight c %}
+{% highlight java %}
 void storeFsSetup(void)
 {
 	storeFsAdd("ufs", storeFsSetup_ufs);
@@ -43,7 +43,7 @@ void storeFsSetup(void)
 
 对于storeFsAdd，这里有一个非常重要的storefs_list全局变量，它保存了全部的fs信息。看该函数下面最后一句的回调
 
-{% highlight c %}
+{% highlight java %}
 void
 storeFsAdd(const char *type, STSETUP * setup)
 {
@@ -63,7 +63,7 @@ storeFsAdd(const char *type, STSETUP * setup)
 
 我们跟踪ufs系统看看，
 
-{% highlight c %}
+{% highlight java %}
 void
 storeFsSetup_ufs(storefs_entry_t * storefs)
 {
@@ -80,7 +80,7 @@ storeFsSetup_ufs(storefs_entry_t * storefs)
 
 我们继续跟踪storeAufsDirParse (注意storeAufsDirParse 是在parse_cachedir函数中调用)
 
-{% highlight c %}
+{% highlight java %}
 /*
  * storeUfsDirParse
  *
