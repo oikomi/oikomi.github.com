@@ -3,6 +3,7 @@ layout: post
 title: Squid源码分析(一)之基础存储路径
 ---
 
+
 Squid源码分析(一)之基础存储路径
 =====================
 
@@ -22,7 +23,6 @@ storeFsInit(void)
     storeReplSetup();
     storeFsSetup();
 }
-
 ```
 首先跟踪storeFsSetup 
 注意该函数是由./store_modules.sh ufs aufs coss null diskd 自动生成，需要编译后才有该函数。
@@ -258,5 +258,4 @@ file_read_method(int fd, char *buf, int len)
     return (_read(fd, buf, len));
 }
 ```
-
 
