@@ -4,10 +4,6 @@ title: Squid源码分析(二)之替换策略
 ---
 
 
-Squid源码分析(二)之替换策略
-=====================
-
-
 {% highlight c %}
 void storeReplSetup(void)
 {
