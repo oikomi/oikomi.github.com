@@ -28,7 +28,7 @@ storeFsInit(void)
 首先跟踪storeFsSetup 
 注意该函数是由./store_modules.sh ufs aufs coss null diskd 自动生成，需要编译后才有该函数。
 
-```
+{% highlight c %}
 void storeFsSetup(void)
 {
 	storeFsAdd("ufs", storeFsSetup_ufs);
@@ -37,11 +37,11 @@ void storeFsSetup(void)
 	storeFsAdd("null", storeFsSetup_null);
 	storeFsAdd("diskd", storeFsSetup_diskd);
 }
-```
+{% endhighlight %}
 
 对于storeFsAdd，这里有一个非常重要的storefs_list全局变量，它保存了全部的fs信息。看该函数下面最后一句的回调
 
-```
+{% highlight c %}
 void
 storeFsAdd(const char *type, STSETUP * setup)
 {
@@ -57,11 +57,11 @@ storeFsAdd(const char *type, STSETUP * setup)
     /* Call the FS to set up capabilities and initialize the FS driver */
     setup(&storefs_list[i]);
 }
-```
+{% endhighlight %}
 
 我们跟踪ufs系统看看，
 
-```
+{% highlight c %}
 void
 storeFsSetup_ufs(storefs_entry_t * storefs)
 {
@@ -72,13 +72,13 @@ storeFsSetup_ufs(storefs_entry_t * storefs)
     ufs_state_pool = memPoolCreate("UFS IO State data", sizeof(ufsstate_t));
     ufs_initialised = 1;
 }
-```
+{% endhighlight %}
 
 可以看出该函数是用来填充storefs_list全局变量相对ufs部分的，并置ufs_initialised = 1; 其中 storefs->parsefunc = storeUfsDirParse;比较重要。
 
 我们继续跟踪storeAufsDirParse (注意storeAufsDirParse 是在parse_cachedir函数中调用)
 
-```
+{% highlight c %}
 /*
  * storeUfsDirParse
  *
@@ -153,11 +153,11 @@ storeUfsDirParse(SwapDir * sd, int index, char *path)
     /* Initialise replacement policy stuff */
     sd->repl = createRemovalPolicy(Config.replPolicy);
 }
-```
+{% endhighlight %}
 
 该函数较长，其主要就是填充_SwapDir结构体(非常重要，另外分析)
 
-```
+{% highlight c %}
     sd->obj.create = storeUfsCreate;
     sd->obj.open = storeUfsOpen;
     sd->obj.close = storeUfsClose;
@@ -165,13 +165,13 @@ storeUfsDirParse(SwapDir * sd, int index, char *path)
     sd->obj.write = storeUfsWrite;
     sd->obj.unlink = storeUfsUnlink;
     sd->obj.recycle = storeUfsRecycle;
-```
+{% endhighlight %}
 
 重点看上面几句，其表示了关于存储IO的回调函数设置。
 
 我们看看storeUfsRead
 
-```
+{% highlight c %}
 void
 storeUfsRead(SwapDir * SD, storeIOState * sio, char *buf, size_t size, squid_off_t offset, STRCB * callback, void *callback_data)
 {
@@ -193,21 +193,21 @@ storeUfsRead(SwapDir * SD, storeIOState * sio, char *buf, size_t size, squid_off
 	storeUfsReadDone,
 	sio);
 }
-```
+{% endhighlight %}
 
 ufs是调用file_read
 
 file_read - diskHandleRead - FD_READ_METHOD
  
-```
+{% highlight c %}
 #define FD_READ_METHOD(fd, buf, len) (*fd_table[fd].read_method)(fd, buf, len)
-```
+{% endhighlight %}
 
 注意fd_table是一个全局变量，它以文件fd为索引。
 
 其中read_method 是在下面 fd_open 中赋值的
 
-```
+{% highlight c %}
 void
 fd_open(int fd, unsigned int type, const char *desc)
 {
@@ -248,15 +248,15 @@ fd_open(int fd, unsigned int type, const char *desc)
 	fd_note(fd, desc);
     Number_FD++;
 }
-```
+{% endhighlight %}
 
 所以就进入了file_read_method， 在调用系统 _read
 
-```
+{% highlight c %}
 int
 file_read_method(int fd, char *buf, int len)
 {
     return (_read(fd, buf, len));
 }
-```
+{% endhighlight %}
 
