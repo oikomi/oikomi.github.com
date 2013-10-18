@@ -3,8 +3,6 @@ layout: post
 title: Squid源码分析(四)之请求命中代码
 ---
 
-> **NOTE:** The de(#).
-
 
 clientProcessRequest 用来处理一个用户请求，
 
