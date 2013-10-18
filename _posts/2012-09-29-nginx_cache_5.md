@@ -3,7 +3,8 @@ layout: post
 title: Squid源码分析(五)之业务逻辑分析
 ---
 
-
+Squid源码分析(五)之业务逻辑分析
+=====================
 
 收到请求后，根据请求的URL和method 进行hash生成键值, 在全局哈希表store_table 中进行查找， 若命中则调用storeClientCopy 拷贝数据； 若没有命中则转发后端服务器，在调用storeAppend把数据交给squid存储系统并转发给用户.
 

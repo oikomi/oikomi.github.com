@@ -3,6 +3,10 @@ layout: post
 title: Squid源码分析(一)之基础存储路径
 ---
 
+
+Squid源码分析(一)之基础存储路径
+=====================
+
 main ---- > storeFsInit
 
 关于storeFsInit 这个函数，其实是做了2步：
