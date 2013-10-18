@@ -6,6 +6,9 @@ title: Squid源码分析(四)之请求命中代码
 Squid源码分析(四)之请求命中代码
 =====================
 
+> **NOTE:** 原创文章，转载请注明：转载自 [blog.miaohong.org](http://blog.miaohong.org/) 本文链接地址: http://blog.miaohong.org/2012/08/29/nginx_cache_4.html
+
+
 clientProcessRequest 用来处理一个用户请求，
 
 {% highlight c %}

@@ -6,6 +6,10 @@ title: Squid源码分析(二)之替换策略
 Squid源码分析(二)之替换策略
 =====================
 
+> **NOTE:** 原创文章，转载请注明：转载自 [blog.miaohong.org](http://blog.miaohong.org/) 本文链接地址: http://blog.miaohong.org/2012/08/25/nginx_cache_2.html
+
+
+
 {% highlight c %}
 void storeReplSetup(void)
 {
