@@ -6,7 +6,7 @@ title: Squid定制开发(一)之怎样在不影响业务的情况下重新加载
 Squid定制开发(一)之怎样在不影响业务的情况下重新加载hosts文件
 =====================
 
-> **NOTE:** 原创文章，转载请注明：转载自 [blog.miaohong.org](http://blog.miaohong.org/) 本文链接地址: http://blog.miaohong.org/2012/09/29/squid_cache_5.html
+> **NOTE:** 原创文章，转载请注明：转载自 [blog.miaohong.org](http://blog.miaohong.org/) 本文链接地址: http://blog.miaohong.org/2013/07/29/squid_reconfig.html
 
 
 最近我做的项目遇到一个需求，就是squid要经常重新读取hosts文件，之前的方案一直是 squid -k reconfigure 去重加载。但是这样做有很大的问题。
