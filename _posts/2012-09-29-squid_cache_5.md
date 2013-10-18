@@ -13,7 +13,7 @@ Squid源码分析(五)之业务逻辑分析
 
 对于命中：
 
-storeClientCopy --- > storeClientCopy2 - storeClientCopy3   stmemCopy / storeClientFileRead  - storeRead
+storeClientCopy --- > storeClientCopy2 --- > storeClientCopy3  --- > stmemCopy / storeClientFileRead  --- > storeRead
 
 那好，我们看storeRead
 
