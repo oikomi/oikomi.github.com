@@ -18,7 +18,7 @@ title: About
 
 ***
 
-Friends:
+### Friends:
 
 [王垠](http://www.yinwang.org/)
 
