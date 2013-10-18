@@ -6,7 +6,7 @@ title: Squid源码分析(三)之后端转发请求
 Squid源码分析(三)之后端转发请求
 =====================
 
-> **NOTE:** 原创文章，转载请注明：转载自 [blog.miaohong.org](http://blog.miaohong.org/) 本文链接地址: http://blog.miaohong.org/2012/08/27/nginx_cache_3.html
+> **NOTE:** 原创文章，转载请注明：转载自 [blog.miaohong.org](http://blog.miaohong.org/) 本文链接地址: http://blog.miaohong.org/2012/08/27/squid_cache_3.html
 
 
 
