@@ -1,6 +1,6 @@
 ---
 layout: about
-title: 个人资料(公开)
+title: 个人分享(公开)
 ---
 
 [遗传算法稿子(很久以前的,较乱)](/doc/The optimization of control parameters.pdf)
