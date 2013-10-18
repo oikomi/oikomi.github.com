@@ -3,7 +3,6 @@ layout: about
 title: About
 ---
 
-. Detail Makes Failure.
 
 . [个人发明专利(请单击下载)](/doc/patent.pdf)
 
