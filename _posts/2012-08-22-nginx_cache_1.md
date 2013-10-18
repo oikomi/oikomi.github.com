@@ -3,6 +3,12 @@ layout: post
 title: Squid源码分析(一)之基础存储路径
 ---
 
+### Table of contents
+
+You can insert a table of contents using the marker `[TOC]`:
+
+[TOC]
+
 
 Squid源码分析(一)之基础存储路径
 =====================
