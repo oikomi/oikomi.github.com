@@ -51,15 +51,15 @@ http {
         #charset koi8-r;
 
         #access_log  logs/host.access.log  main;
-	location /s {
+		location /s {
             content_by_lua_file /usr/local/openresty/nginx/conf/ws.lua; 
         }
 	
 
 
-	location /redis.html {
+		location /redis.html {
         content_by_lua_file /usr/local/openresty/nginx/conf/redis.lua;
-    }
+		}
 		
         location / {
             root   html;
@@ -149,3 +149,63 @@ while true do
 --wb:send_close()
 {% endhighlight %}
 
+
+{% highlight html %}
+<html>
+<head>
+<script>
+var ws = null;
+function connect() {
+    if (ws !== null) return log('already connected');
+      ws = new WebSocket('ws://192.168.159.133/s');
+        ws.onopen = function () {
+              log('connected');
+        };
+        ws.onerror = function (error) {
+              log(error);
+        };
+        ws.onmessage = function (e) {
+              log('  ' + e.data);
+        };
+        ws.onclose = function () {
+              log('disconnected');
+              ws = null;
+        };
+        return false;
+}
+function disconnect() {
+    if (ws === null) return log('already disconnected');
+      ws.close();
+      return false;
+}
+function send() {
+    if (ws === null) return log('please connect first');
+      var text = document.getElementById('text').value;
+      document.getElementById('text').value = "";
+      ws.send(text);
+      return false;
+}
+function log(text) {
+    var li = document.createElement('li');
+    li.appendChild(document.createTextNode(text));
+    document.getElementById('log').appendChild(li);
+    return false;
+}
+</script>
+</head>
+<body>
+  <form onsubmit="return send();">
+      <button type="button" onclick="return connect();">
+          Connect
+     </button>
+     <button type="button" onclick="return disconnect();">
+          Disconnect
+     </button>
+     <input id="text" type="text">
+     <button type="submit">Send</button>
+     </form>
+     <ol id="log"></ol>
+ </body>
+</html>
+
+{% endhighlight %}
