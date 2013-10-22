@@ -10,6 +10,71 @@ title: 利用openresty搭建基于websocket的聊天室
 
 
 
+{% highlight shell %}
+#user  nobody;
+worker_processes  1;
+daemon off;
+#error_log  logs/error.log;
+error_log  logs/error.log  notice;
+#error_log  logs/error.log  info;
+
+#pid        logs/nginx.pid;
+
+
+events {
+    worker_connections  1024;
+}
+
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    #log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+    #                  '$status $body_bytes_sent "$http_referer" '
+    #                  '"$http_user_agent" "$http_x_forwarded_for"';
+
+    #access_log  logs/access.log  main;
+
+    sendfile        on;
+    #tcp_nopush     on;
+
+    #keepalive_timeout  0;
+    keepalive_timeout  65;
+    lua_shared_dict talks 1m;
+    #gzip  on;
+
+    server {
+        listen       80;
+        server_name  localhost;
+
+        #charset koi8-r;
+
+        #access_log  logs/host.access.log  main;
+	location /s {
+            content_by_lua_file /usr/local/openresty/nginx/conf/ws.lua; 
+        }
+	
+
+
+	location /redis.html {
+        content_by_lua_file /usr/local/openresty/nginx/conf/redis.lua;
+    }
+		
+        location / {
+            root   html;
+            index  index.html index.htm;
+        }
+
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+    }
+
+}
+{% endhighlight %}
+
 
 {% highlight lua %}
 
