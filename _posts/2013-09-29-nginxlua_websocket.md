@@ -8,6 +8,7 @@ title: 利用openresty搭建基于websocket的聊天室
 
 > **NOTE:** 原创文章，转载请注明：转载自 [blog.miaohong.org](http://blog.miaohong.org/) 本文链接地址: http://blog.miaohong.org/2013/09/29/nginxlua_websocket.html
 
+参考：https://medium.com/technology-and-programming/1778601c9e05
 
 Nginx 配置 nginx.conf
 
