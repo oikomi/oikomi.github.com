@@ -11,21 +11,76 @@ title: 利用openresty搭建基于websocket的聊天室
 
 
 
-{% highlight java %}
-void
-clientHttpConnectionsClose(void)
-{
-    int i = 0;
-    if (opt_stdin_overrides_http_port && reconfiguring)
-         i++;                     /* skip closing & reopening first port because it is overridden */
-    for (; i < NHttpSockets; i++) {
-         if (HttpSockets[i] >= 0) {
-             debug(1, 1) ("FD %d Closing HTTP connection\n", HttpSockets[i]);
-             comm_close(HttpSockets[i]);
-             HttpSockets[i] = -1;
-         }
-    }
-    NHttpSockets = 0;
+{% highlight lua %}
+
+local count = 0
+local server = require "resty.websocket.server"
+
+--redis
+local redis = require "resty.redis"
+local red = redis:new()
+
+red:set_timeout(1000) -- 1 sec
+
+-- or connect to a unix domain socket file listened
+-- by a redis server:
+--     local ok, err = red:connect("unix:/path/to/redis.sock")
+
+local ok, err = red:connect("127.0.0.1", 6379)
+if not ok then
+	ngx.say("failed to connect: ", err)
+	return
+end
+
+--redis
+
+local wb, err = server:new {
+  timeout = 500000,
+  max_payload_len = 65535
 }
+
+if not wb then
+  ngx.log(ngx.ERR, "failed to new websocket: ", err)
+  return ngx.exit(444)
+end
+
+while true do
+  local data, typ, err = wb:recv_frame()
+  --local host = ngx.var.remote_addr
+  local host = "s1"
+  print(host)
+  if wb.fatal then
+	ngx.log(ngx.ERR, "failed to receive frame: ", err)
+	return ngx.exit(444)
+  end
+  
+  red:lpush(host,data)
+  
+  count = count + 1
+  --for i=0, count-1,1 do
+  local res, err = red:lrange(host, 0, -1)
+
+  for i, res in pairs(res) do
+	print(i)
+	print(res)
+	wb:send_text(host .. " says: " .. res)
+	--ngx.say(res)
+	-- process the scalar value
+  end
+  
+
+  end
+ -- if typ == "close" then  break  end
+--[[
+  if typ == "text" then
+	local bytes, err = wb:send_text(data)
+	if not bytes then
+	  ngx.log(ngx.ERR, "failed to send text: ", err)
+	  return ngx.exit(444)
+	end
+  end
+]]
+
+--wb:send_close()
 {% endhighlight %}
 
