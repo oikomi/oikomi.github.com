@@ -11,7 +11,7 @@ title: 利用openresty搭建基于websocket的聊天室
 
 Nginx 配置 nginx.conf
 
-{% highlight shell %}
+{% highlight c %}
 #user  nobody;
 worker_processes  1;
 daemon off;
@@ -148,7 +148,7 @@ while true do
 
 客户端代码
 
-{% highlight html %}
+{% highlight c %}
 <html>
 <head>
 <script>
