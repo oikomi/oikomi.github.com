@@ -9,6 +9,7 @@ title: 利用openresty搭建基于websocket的聊天室
 > **NOTE:** 原创文章，转载请注明：转载自 [blog.miaohong.org](http://blog.miaohong.org/) 本文链接地址: http://blog.miaohong.org/2013/09/29/nginxlua_websocket.html
 
 
+Nginx 配置 nginx.conf
 
 {% highlight shell %}
 #user  nobody;
@@ -54,13 +55,7 @@ http {
 		location /s {
             content_by_lua_file /usr/local/openresty/nginx/conf/ws.lua; 
         }
-	
-
-
-		location /redis.html {
-        content_by_lua_file /usr/local/openresty/nginx/conf/redis.lua;
-		}
-		
+			
         location / {
             root   html;
             index  index.html index.htm;
@@ -75,6 +70,8 @@ http {
 }
 {% endhighlight %}
 
+
+ws.lua文件内容
 
 {% highlight lua %}
 
@@ -149,6 +146,7 @@ while true do
 --wb:send_close()
 {% endhighlight %}
 
+客户端代码
 
 {% highlight html %}
 <html>
