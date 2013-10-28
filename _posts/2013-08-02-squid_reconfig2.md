@@ -9,7 +9,53 @@ Squid定制开发(二)之怎样在不影响业务的情况下重新加载hosts�
 > **NOTE:** 原创文章，转载请注明：转载自 [blog.miaohong.org](http://blog.miaohong.org/) 本文链接地址: http://blog.miaohong.org/2013/08/02/squid_reconfig2.html
 
 
-接上文，
+接上文，如果考虑到hosts文件很大的情况下，前面的替换方案效率可能会有影响。所以引入增量方式，具体来说：
+
+假设 hosts文件内容如下
+[root@miaohong squiddiff]# cat etc/hosts
+192.168.3.9 s4
+192.168.1.19 s1
+192.168.2.12 s2
+
+更新的文件为hosts_new
+[root@miaohong squiddiff]# cat  etc/hosts_new
+192.168.3.9 s8
+192.168.2.12 s2
+192.168.4.11 s19
+
+
+首先将上面两个文件进行排序
+[root@miaohong squiddiff]# sort etc/hosts
+192.168.1.19 s1
+192.168.2.12 s2
+192.168.3.9 s4
+
+[root@miaohong squiddiff]# sort etc/hosts_new
+192.168.2.12 s2
+192.168.3.9 s8
+192.168.4.11 s19
+
+上面排序后的两个文件 分别命名为 hosts_sort  和  hosts_new_sort
+
+对hosts_sort  和  hosts_new_sort 做comm运算
+
+对于增加：
+[root@miaohong squiddiff]# comm -13 etc/hosts_sort etc/hosts_new_sort
+192.168.3.9 s8
+192.168.4.11 s19
+
+生成文件命名为hosts_add， 即为要增加的文件内容
+
+
+对于删除：
+[root@miaohong squiddiff]# comm -23 etc/hosts_sort etc/hosts_new_sort
+192.168.1.19 s1
+192.168.3.9 s4
+
+生成文件命名为hosts_del， 即为要删除的文件内容
+
+
+贴一个diff吧
 
 {% highlight java %}
 Index: src/fqdncache.c
