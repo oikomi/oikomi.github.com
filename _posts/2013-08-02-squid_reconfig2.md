@@ -11,6 +11,7 @@ Squid定制开发(二)之怎样在不影响业务的情况下重新加载hosts�
 
 接上文，如果考虑到hosts文件很大的情况下，前面的替换方案效率可能会有影响。所以引入增量方式，具体来说：
 
+{% highlight java %}
 假设 hosts文件内容如下
 [root@miaohong squiddiff]# cat etc/hosts
 192.168.3.9 s4
@@ -54,6 +55,7 @@ Squid定制开发(二)之怎样在不影响业务的情况下重新加载hosts�
 
 生成文件命名为hosts_del， 即为要删除的文件内容
 
+{% endhighlight %}
 
 贴一个diff吧
 
