@@ -6,164 +6,357 @@ title: Squid定制开发(二)之怎样在不影响业务的情况下重新加载
 Squid定制开发(二)之怎样在不影响业务的情况下重新加载hosts文件(增量模式)
 =====================
 
-> **NOTE:** 原创文章，转载请注明：转载自 [blog.miaohong.org](http://blog.miaohong.org/) 本文链接地址: http://blog.miaohong.org/2013/07/29/squid_reconfig.html
+> **NOTE:** 原创文章，转载请注明：转载自 [blog.miaohong.org](http://blog.miaohong.org/) 本文链接地址: http://blog.miaohong.org/2013/08/02/squid_reconfig2.html
 
 
-最近我做的项目遇到一个需求，就是squid要经常重新读取hosts文件，之前的方案一直是 squid -k reconfigure 去重加载。但是这样做有很大的问题。
-
-看了一下代码， 发现squid这块做的很糟糕（不如nginx），如下
+接上文，
 
 {% highlight java %}
-void
-clientHttpConnectionsClose(void)
-{
-    int i = 0;
-    if (opt_stdin_overrides_http_port && reconfiguring)
-         i++;                     /* skip closing & reopening first port because it is overridden */
-    for (; i < NHttpSockets; i++) {
-         if (HttpSockets[i] >= 0) {
-             debug(1, 1) ("FD %d Closing HTTP connection\n", HttpSockets[i]);
-             comm_close(HttpSockets[i]);
-             HttpSockets[i] = -1;
-         }
-    }
-    NHttpSockets = 0;
-}
+Index: src/fqdncache.c
+===================================================================
+--- src/fqdncache.c	(revision 101206)
++++ src/fqdncache.c	(working copy)
+@@ -565,6 +565,42 @@
+     purge_entries_fromhosts();
+ }
+ 
++//add by miaohong
++
++void fqdncacheDel(const char *name)
++{
++	fqdncache_entry * fqdndelEntry;
++	if(fqdndelEntry=fqdncache_get(name)) {
++		fqdncacheRelease(fqdndelEntry);
++	}
++}
++
++
++void
++debug_walkfqdntables() 
++{	
++	int i;
++	hash_table *hfqdn = fqdn_table;
++	hash_link *walker = NULL;
++	debug(35, 1) ("-----fqdn_table->count = %d ------- \n",
++	    hfqdn->count);
++	/*
++	debug(35, 1) ("---------hashkey_count = %d------\n",
++	    hashkey_count);	
++	debug(35, 1) ("walking hash table...\n");	
++	for (i = 0; i < hashkey_count; i++) {
++		walker = hfqdn->buckets[hashkey[i]];
++		debug(14, 1) ("item %5d: key: '%s' \n",
++	    i, walker->key);	
++	}
++	debug(35, 1) ("done walking hash table...\n");
++	*/
++}
++
++
++//add by miaohong end
++
++
+ /*
+  *  adds a "static" entry from /etc/hosts.  the worldist is to be
+  *  managed by the caller, including pointed-to strings
+Index: src/ipcache.c
+===================================================================
+--- src/ipcache.c	(revision 101211)
++++ src/ipcache.c	(working copy)
+@@ -759,21 +759,29 @@
+ }
+ 
+ //add by miaohong
+-int hashkey[];
+-static int hashkey_count = 0;
++/*
++int hashkey[] ={0};
++int hashkey_count = 0;
++*/
+ 
+-void initPara()
++void ipcacheDel(const char *addrname)
+ {
+-	hashkey_count = 0;
++	ipcache_entry * ipdelEntry;
++	int b;
++	if(ipdelEntry=ipcache_get(addrname)) {
++		ipcacheRelease(ipdelEntry);
++		//b = ip_table->hash(hostname, hid->size);
++		//hashkey_count--;
++	}
+ }
+ 
+-void
+-releaseIptable()
++/*
++void initPara()
+ {
+-	hashFreeItems(ip_table, ipcacheFreeEntry);
++	hashkey_count = 0;
+ }
++*/
+ 
+-
+ void
+ debug_walkIptables() 
+ {	
+@@ -780,19 +788,21 @@
+ 	int i;
+ 	hash_table *hid = ip_table;
+ 	hash_link *walker = NULL;
+-	debug(14, 1) ("-----ip_table->count = %d ------- \n",
+-	    hid->count);
+-	debug(14, 1) ("---------hashkey_count = %d------\n",
+-	    hashkey_count);	
++	debug(14, 1) ("-----ip_table->count = %d ------- \n",hid->count);
++	/*
++	debug(14, 1) ("---------hashkey_count = %d------\n",hashkey_count);	
+ 	debug(14, 1) ("walking hash table...\n");	
++	
+ 	for (i = 0; i < hashkey_count; i++) {
+ 		walker = hid->buckets[hashkey[i]];
+-		debug(14, 1) ("item %5d: key: '%s' \n",
+-	    i, walker->key);	
++		debug(14, 1) ("item %5d: key: '%s' \n",i, walker->key);	
+ 	}
++	
+ 	debug(14, 1) ("done walking hash table...\n");
++	*/
+ }
+ 
++/*
+ void
+ genHashkey(hash_table *hid, const char *name)
+ {
+@@ -800,9 +810,11 @@
+ 	b = hid->hash(name, hid->size);
+ 	hashkey[hashkey_count] = b;	
+ 	hashkey_count++;
+-}
++} 
++*/
+ 
+ //add by miaohong end
++
+ /*
+  *  adds a "static" entry from /etc/hosts.  
+  *  returns 0 upon success, 1 if the ip address is invalid
+@@ -844,10 +856,9 @@
+     ipcacheAddEntry(i);
+     ipcacheLockEntry(i);
+ 	//add by miaohong
+-	genHashkey(ip_table, name);
++	//genHashkey(ip_table, name);
+ 	//debug_walkIptables();
+ 	//add by miaohong end
+-	printf("---------------end--------------\n");
+     return 0;
+ }
+ 
+Index: src/stat.c
+===================================================================
+--- src/stat.c	(revision 101206)
++++ src/stat.c	(working copy)
+@@ -1471,23 +1471,32 @@
+ }
+ 
+ //add by mh
++/*
+ static void releaseSource()
+ {
+ 	ipcacheFreeMemory();
+ 	fqdncacheFreeMemory();
+ }
++*/
++static void debugReconfig()
++{
++    debug_walkIptables();
++	debug_walkfqdntables();
++}
++
+ static void
+ doReconfig(StoreEntry * s)
+ {
+-	initPara();
+-	//prevent memory leaks
+-	releaseSource();
+-	ipcache_init(); 
+-	fqdncache_init();
+-	parseEtcHosts();
+-	debug_walkIptables();
++	debugReconfig();
++	debug(18, 1) ("[ADD] hosts to be add...\n");
++	parseDiffHostsAdd();
++	debugReconfig();
++	debug(18, 1) ("[DEL] hosts to be del...\n");
++	parseDiffHostsDel();
++	debugReconfig();
+ }
+ //add by mh end 
++
+ static void
+ statClientRequests(StoreEntry * s)
+ {
+Index: src/tools.c
+===================================================================
+--- src/tools.c	(revision 101206)
++++ src/tools.c	(working copy)
+@@ -1137,7 +1137,159 @@
+     return 1;
+ }
+ 
++//miaohong add
++
++#define DIFF_HOSTS_ADD "/opt/squiddiff/etc/hosts_add"
++#define DIFF_HOSTS_DEL "/opt/squiddiff/etc/hosts_del"
++
++
+ void
++parseDiffHostsDel(void)
++{
++    FILE *fp;
++    char buf[1024];
++    char buf2[512];
++    char *nt = buf;
++    char *lt = buf;
++	/*
++    if (NULL == Config.etcHostsPath)
++	return;
++    if (0 == strcmp(Config.etcHostsPath, "none"))
++	return;
++	*/
++    fp = fopen(DIFF_HOSTS_DEL, "r");
++    if (fp == NULL) {
++	debug(1, 1) ("parseDiffHostsDel: %s: %s\n",
++	    DIFF_HOSTS_DEL, xstrerror());
++	return;
++    }
++#ifdef _SQUID_WIN32_
++    setmode(fileno(fp), O_TEXT);
++#endif
++    while (fgets(buf, 1024, fp)) {	/* for each line */
++	wordlist *hosts = NULL;
++	char *addr;
++	if (buf[0] == '#')	/* MS-windows likes to add comments */
++	    continue;
++	strtok(buf, "#");	/* chop everything following a comment marker */
++	lt = buf;
++	addr = buf;
++	debug(1, 5) ("etc_hosts: line is '%s'\n", buf);
++	nt = strpbrk(lt, w_space);
++	if (nt == NULL)		/* empty line */
++	    continue;
++	*nt = '\0';		/* null-terminate the address */
++	debug(1, 5) ("etc_hosts: address is '%s'\n", addr);
++	lt = nt + 1;
++	while ((nt = strpbrk(lt, w_space))) {
++	    char *host = NULL;
++	    if (nt == lt) {	/* multiple spaces */
++		debug(1, 5) ("etc_hosts: multiple spaces, skipping\n");
++		lt = nt + 1;
++		continue;
++	    }
++	    *nt = '\0';
++	    debug(1, 5) ("etc_hosts: got hostname '%s'\n", lt);
++	    if (Config.appendDomain && !strchr(lt, '.')) {
++		/* I know it's ugly, but it's only at reconfig */
++		strncpy(buf2, lt, 512);
++		strncat(buf2, Config.appendDomain, 512 - strlen(lt) - 1);
++		host = buf2;
++	    } else {
++		host = lt;
++	    }
++		ipcacheDel(host);
++
++	    //if (ipcacheAddEntryFromHosts(host, addr) != 0)
++		//goto skip;	/* invalid address, continuing is useless */
++	    //wordlistAdd(&hosts, host);
++	    lt = nt + 1;
++		
++	}
++	//ipcacheDel(addr);
++	fqdncacheDel(addr);
++	/*
++	fqdncacheAddEntryFromHosts(addr, hosts);
++      skip:
++	wordlistDestroy(&hosts);
++	*/
++    }
++    fclose(fp);
++}
++
++
++
++void
++parseDiffHostsAdd(void)
++{
++    FILE *fp;
++    char buf[1024];
++    char buf2[512];
++    char *nt = buf;
++    char *lt = buf;
++	/*
++    if (NULL == Config.etcHostsPath)
++	return;
++    if (0 == strcmp(Config.etcHostsPath, "none"))
++	return;
++	*/
++    fp = fopen(DIFF_HOSTS_ADD, "r");
++    if (fp == NULL) {
++	debug(1, 1) ("parseDiffHostsAdd: %s: %s\n",
++	    DIFF_HOSTS_ADD, xstrerror());
++	return;
++    }
++#ifdef _SQUID_WIN32_
++    setmode(fileno(fp), O_TEXT);
++#endif
++    while (fgets(buf, 1024, fp)) {	/* for each line */
++	wordlist *hosts = NULL;
++	char *addr;
++	if (buf[0] == '#')	/* MS-windows likes to add comments */
++	    continue;
++	strtok(buf, "#");	/* chop everything following a comment marker */
++	lt = buf;
++	addr = buf;
++	debug(1, 5) ("etc_hosts: line is '%s'\n", buf);
++	nt = strpbrk(lt, w_space);
++	if (nt == NULL)		/* empty line */
++	    continue;
++	*nt = '\0';		/* null-terminate the address */
++	debug(1, 5) ("etc_hosts: address is '%s'\n", addr);
++	lt = nt + 1;
++	while ((nt = strpbrk(lt, w_space))) {
++	    char *host = NULL;
++	    if (nt == lt) {	/* multiple spaces */
++		debug(1, 5) ("etc_hosts: multiple spaces, skipping\n");
++		lt = nt + 1;
++		continue;
++	    }
++	    *nt = '\0';
++	    debug(1, 5) ("etc_hosts: got hostname '%s'\n", lt);
++	    if (Config.appendDomain && !strchr(lt, '.')) {
++		/* I know it's ugly, but it's only at reconfig */
++		strncpy(buf2, lt, 512);
++		strncat(buf2, Config.appendDomain, 512 - strlen(lt) - 1);
++		host = buf2;
++	    } else {
++		host = lt;
++	    }
++	    if (ipcacheAddEntryFromHosts(host, addr) != 0)
++		goto skip;	/* invalid address, continuing is useless */
++	    wordlistAdd(&hosts, host);
++	    lt = nt + 1;
++	}
++	fqdncacheAddEntryFromHosts(addr, hosts);
++      skip:
++	wordlistDestroy(&hosts);
++    }
++    fclose(fp);
++}
++
++//miaohong add end
+
 {% endhighlight %}
 
-发现squid会把所有客户端连接都干掉的。如果加载频繁，感觉明显会影响业务的。
 
-解决思路：
-
-借鉴squidclient给squid发送一个命令，squid接收到该命令后，就去读取hosts文件，再去刷新内存变量。
-
-如  squidclient -t 1 -h 127.0.0.1 -p 18000 mgr:reconfig  其中reconfig就是自己定义的命令。
-
-上面的方案可以在不断开客户端连接的情况下，起到重新加载配置的作用。
-
-
-代码改动如下：
-
-在src/stat.c中
-
-{% highlight java %}
-//add by mh
-static OBJH doReconfig;
-//add by mh end
-
-//add by mh
-static void releaseSource()
-{
-	ipcacheFreeMemory();
-	fqdncacheFreeMemory();
-}
-
-static void
-doReconfig(StoreEntry * s)
-{
-	//prevent memory leaks
-	releaseSource();
-	ipcache_init(); 
-	fqdncache_init();
-	parseEtcHosts();
-	debug_walkIptables();
-}
-//add by mh end 
-{% endhighlight %}
-
-
-{% highlight java %}
-void
-statInit(void)
-{
-    int i;
-    debug(18, 5) ("statInit: Initializing...\n");
-    CBDATA_INIT_TYPE(StatObjectsState);
-    for (i = 0; i < N_COUNT_HIST; i++)
-	statCountersInit(&CountHist[i]);
-    for (i = 0; i < N_COUNT_HOUR_HIST; i++)
-	statCountersInit(&CountHourHist[i]);
-    statCountersInit(&statCounter);
-    eventAdd("statAvgTick", statAvgTick, NULL, (double) COUNT_INTERVAL, 1);
-    cachemgrRegister("info",
-	"General Runtime Information",
-	info_get, 0, 1);
-    cachemgrRegister("filedescriptors",
-	"Process Filedescriptor Allocation",
-	statFiledescriptors, 0, 1);
-    cachemgrRegister("objects",
-	"All Cache Objects",
-	stat_objects_get, 0, 0);
-    cachemgrRegister("vm_objects",
-	"In-Memory and In-Transit Objects",
-	stat_vmobjects_get, 0, 0);
-    cachemgrRegister("openfd_objects",
-	"Objects with Swapout files open",
-	statOpenfdObj, 0, 0);
-    cachemgrRegister("pending_objects",
-	"Objects being retreived from the network",
-	statPendingObj, 0, 0);
-    cachemgrRegister("client_objects",
-	"Objects being sent to clients",
-	statClientsObj, 0, 0);
-    cachemgrRegister("io",
-	"Server-side network read() size histograms",
-	stat_io_get, 0, 1);
-    cachemgrRegister("counters",
-	"Traffic and Resource Counters",
-	statCountersDump, 0, 1);
-    cachemgrRegister("peer_select",
-	"Peer Selection Algorithms",
-	statPeerSelect, 0, 1);
-    cachemgrRegister("digest_stats",
-	"Cache Digest and ICP blob",
-	statDigestBlob, 0, 1);
-    cachemgrRegister("5min",
-	"5 Minute Average of Counters",
-	statAvg5min, 0, 1);
-    cachemgrRegister("60min",
-	"60 Minute Average of Counters",
-	statAvg60min, 0, 1);
-    cachemgrRegister("utilization",
-	"Cache Utilization",
-	statUtilization, 0, 1);
-#if STAT_GRAPHS
-    cachemgrRegister("graph_variables",
-	"Display cache metrics graphically",
-	statGraphDump, 0, 1);
-#endif
-    cachemgrRegister("histograms",
-	"Full Histogram Counts",
-	statCountersHistograms, 0, 1);
-    ClientActiveRequests.head = NULL;
-    ClientActiveRequests.tail = NULL;
-    cachemgrRegister("active_requests",
-	"Client-side Active Requests",
-	statClientRequests, 0, 1);
-	//add by mh for reconfig
-	cachemgrRegister("reconfig",
-		"reconfig config file",
-		doReconfig, 0, 1);
-	//add by mh for reconfig end
-}
-{% endhighlight %}
-
-其中debug_walkIptables是调试打印现在的hosts内容
-
-{% highlight java %}
-void
-debug_walkIptables() 
-{	
-	int i;
-	hash_table *hid = ip_table;
-	hash_link *walker = NULL;
-	printf("-----ip_table->count = %d ------- \n", hid->count);
-	printf("---------hashkey_count = %d------\n", hashkey_count);
-	printf("walking hash table...\n");
-	for (i = 0; i < hashkey_count; i++) {
-		walker = hid->buckets[hashkey[i]];
-		printf("item %5d: key: '%s' \n", i, walker->key);
-	}
-	printf("done walking hash table...\n");
-}
-{% endhighlight %}
