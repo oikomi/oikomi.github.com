@@ -3,13 +3,14 @@ layout: post
 title: Squid源码分析(一)之基础存储路径
 ---
 
+
+> **NOTE:**  原创文章，转载请注明：转载自 [blog.miaohong.org](http://blog.miaohong.org/) 本文链接地址: http://blog.miaohong.org/2012/08/22/squid_cache_1.html
+
 目录
 =================
 
 * [main ---- > storeFsInit](#main ---- > storeFsInit)
 
-
-> **NOTE:**  原创文章，转载请注明：转载自 [blog.miaohong.org](http://blog.miaohong.org/) 本文链接地址: http://blog.miaohong.org/2012/08/22/squid_cache_1.html
 
 
 main ---- > storeFsInit
