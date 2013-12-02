@@ -188,3 +188,81 @@ diff squid-suning/src/structs.h squid-2.7.STABLE9/src/structs.h
 {% endhighlight %}
 
 
+测试环境：
+
+Client -->   squid -->  nginx
+
+其中nginx配置如下：
+location ~ /true.html {
+                   root /tmp;
+}
+location ~ /(t.html) {
+                   set $v "true.html";
+                   gzip off;
+                   proxy_buffer_size 4k;
+                   proxy_buffering on;
+                   proxy_buffers 8 128k;
+                   proxy_busy_buffers_size  768k;
+                   proxy_set_header X-Forwarded-For  $remote_addr;
+                   proxy_set_header  Cache-Control  max-age=100;   
+                   proxy_set_header  Cache-Control  c-maxage=50;   #源站发出c-maxage头
+                   proxy_set_header   Host   doghole;
+                   proxy_pass http://distribute.vhosts/$v; # refers to squid cluster
+}
+
+测试结果：
+	没命中
+[root@ppserver ~]# curl --head http://127.0.0.1/suning.html
+HTTP/1.1 200 OK
+Server: nginx/5.3
+Date: Mon, 02 Dec 2013 06:10:32 GMT
+Content-Type: text/html
+Content-Length: 5
+Connection: keep-alive
+Last-Modified: Fri, 29 Nov 2013 10:21:40 GMT
+ETag: "52986ab4-5"
+Accept-Ranges: bytes
+Cache-Control: max-age=50  # 将100赋值给max-age
+X-Cache: MISS from livesquid
+X-Cache-Lookup: MISS from livesquid:18000
+Via: 1.1 livesquid:18000 (squid/2.7.STABLE9)
+
+
+	命中：
+[root@ppserver ~]# curl --head http://127.0.0.1/suning.html
+HTTP/1.1 200 OK
+Server: nginx/5.3
+Date: Mon, 02 Dec 2013 06:15:13 GMT
+Content-Type: text/html
+Content-Length: 5
+Connection: keep-alive
+Accept-Ranges: bytes
+Last-Modified: Fri, 29 Nov 2013 10:21:40 GMT
+ETag: "52986ab4-5"
+Cache-Control: max-age=50
+X-Cache: HIT from livesquid
+X-Cache-Lookup: HIT from livesquid:18000
+Via: 1.1 livesquid:18000 (squid/2.7.STABLE9)
+
+
+另外，打印squid内部信息
+
+[Debug for suning] header info :  X-Forwarded-For = 127.0.0.1
+[Debug for suning] header info :  Cache-Control = max-age=100
+[Debug for suning] header info :  Cache-Control = c-maxage=50
+[Debug for suning] header info :  Host = doghole
+[Debug for suning] header info :  Connection = close
+[Debug for suning] header info :  User-Agent = curl/7.19.7 (x86_64-redhat-linux-gnu) libcurl/7.19.7 NSS/3.13.6.0 zlib/1.2.3 libidn/1.18 libssh2/1.4.2
+[Debug for suning] header info :  Accept = */*
+[Debug for suning] header info :  Server = nginx/5.3
+[Debug for suning] header info :  Date = Mon, 02 Dec 2013 06:27:14 GMT
+[Debug for suning] header info :  Content-Type = text/html
+[Debug for suning] header info :  Content-Length = 5
+[Debug for suning] header info :  Last-Modified = Fri, 29 Nov 2013 10:21:40 GMT
+[Debug for suning] header info :  Connection = keep-alive
+[Debug for suning] header info :  ETag = "52986ab4-5"
+[Debug for suning] header info :  Accept-Ranges = bytes
+
+可以看到squid内部也识别c-maxage头，另外c-maxage只是添加一个头识别，但不做语义处理，所以不会对缓存策略产生影响，影响的还是max-age
+
+
