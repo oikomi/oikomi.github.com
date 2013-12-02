@@ -6,404 +6,178 @@ title: Squid定制开发(三)之添加修改header头
 Squid定制开发(三)之添加修改header头
 =====================
 
-> **NOTE:** 原创文章，转载请注明：转载自 [blog.miaohong.org](http://blog.miaohong.org/) 本文链接地址: http://blog.miaohong.org/2013/08/02/squid_reconfig2.html
+> **NOTE:** 原创文章，转载请注明：转载自 [blog.miaohong.org](http://blog.miaohong.org/) 本文链接地址: http://blog.miaohong.org/2013/12/01/squid_addheader.html
 
 
-接上文，如果考虑到hosts文件很大的情况下，前面的替换方案效率可能会有影响。所以引入增量方式，具体来说：
-
-{% highlight java %}
-假设 hosts文件内容如下
-[root@miaohong squiddiff]# cat etc/hosts
-192.168.3.9 s4
-192.168.1.19 s1
-192.168.2.12 s2
-
-更新的文件为hosts_new
-[root@miaohong squiddiff]# cat  etc/hosts_new
-192.168.3.9 s8
-192.168.2.12 s2
-192.168.4.11 s19
+最近有个需求，需要：
 
 
-首先将上面两个文件进行排序
-[root@miaohong squiddiff]# sort etc/hosts
-192.168.1.19 s1
-192.168.2.12 s2
-192.168.3.9 s4
-
-[root@miaohong squiddiff]# sort etc/hosts_new
-192.168.2.12 s2
-192.168.3.9 s8
-192.168.4.11 s19
-
-上面排序后的两个文件 分别命名为 hosts_sort  和  hosts_new_sort
-
-对hosts_sort  和  hosts_new_sort 做comm运算
-
-对于增加：
-[root@miaohong squiddiff]# comm -13 etc/hosts_sort etc/hosts_new_sort
-192.168.3.9 s8
-192.168.4.11 s19
-
-生成文件命名为hosts_add， 即为要增加的文件内容
-
-
-对于删除：
-[root@miaohong squiddiff]# comm -23 etc/hosts_sort etc/hosts_new_sort
-192.168.1.19 s1
-192.168.3.9 s4
-
-生成文件命名为hosts_del， 即为要删除的文件内容
-
-{% endhighlight %}
-
-贴一个diff吧
 
 {% highlight java %}
-Index: src/fqdncache.c
-===================================================================
---- src/fqdncache.c	(revision 101206)
-+++ src/fqdncache.c	(working copy)
-@@ -565,6 +565,42 @@
-     purge_entries_fromhosts();
- }
- 
-+//add by miaohong
-+
-+void fqdncacheDel(const char *name)
-+{
-+	fqdncache_entry * fqdndelEntry;
-+	if(fqdndelEntry=fqdncache_get(name)) {
-+		fqdncacheRelease(fqdndelEntry);
-+	}
-+}
-+
-+
-+void
-+debug_walkfqdntables() 
-+{	
-+	int i;
-+	hash_table *hfqdn = fqdn_table;
-+	hash_link *walker = NULL;
-+	debug(35, 1) ("-----fqdn_table->count = %d ------- \n",
-+	    hfqdn->count);
-+	/*
-+	debug(35, 1) ("---------hashkey_count = %d------\n",
-+	    hashkey_count);	
-+	debug(35, 1) ("walking hash table...\n");	
-+	for (i = 0; i < hashkey_count; i++) {
-+		walker = hfqdn->buckets[hashkey[i]];
-+		debug(14, 1) ("item %5d: key: '%s' \n",
-+	    i, walker->key);	
-+	}
-+	debug(35, 1) ("done walking hash table...\n");
-+	*/
-+}
-+
-+
-+//add by miaohong end
-+
-+
- /*
-  *  adds a "static" entry from /etc/hosts.  the worldist is to be
-  *  managed by the caller, including pointed-to strings
-Index: src/ipcache.c
-===================================================================
---- src/ipcache.c	(revision 101211)
-+++ src/ipcache.c	(working copy)
-@@ -759,21 +759,29 @@
- }
- 
- //add by miaohong
--int hashkey[];
--static int hashkey_count = 0;
-+/*
-+int hashkey[] ={0};
-+int hashkey_count = 0;
-+*/
- 
--void initPara()
-+void ipcacheDel(const char *addrname)
- {
--	hashkey_count = 0;
-+	ipcache_entry * ipdelEntry;
-+	int b;
-+	if(ipdelEntry=ipcache_get(addrname)) {
-+		ipcacheRelease(ipdelEntry);
-+		//b = ip_table->hash(hostname, hid->size);
-+		//hashkey_count--;
-+	}
- }
- 
--void
--releaseIptable()
-+/*
-+void initPara()
- {
--	hashFreeItems(ip_table, ipcacheFreeEntry);
-+	hashkey_count = 0;
- }
-+*/
- 
--
- void
- debug_walkIptables() 
- {	
-@@ -780,19 +788,21 @@
- 	int i;
- 	hash_table *hid = ip_table;
- 	hash_link *walker = NULL;
--	debug(14, 1) ("-----ip_table->count = %d ------- \n",
--	    hid->count);
--	debug(14, 1) ("---------hashkey_count = %d------\n",
--	    hashkey_count);	
-+	debug(14, 1) ("-----ip_table->count = %d ------- \n",hid->count);
-+	/*
-+	debug(14, 1) ("---------hashkey_count = %d------\n",hashkey_count);	
- 	debug(14, 1) ("walking hash table...\n");	
-+	
- 	for (i = 0; i < hashkey_count; i++) {
- 		walker = hid->buckets[hashkey[i]];
--		debug(14, 1) ("item %5d: key: '%s' \n",
--	    i, walker->key);	
-+		debug(14, 1) ("item %5d: key: '%s' \n",i, walker->key);	
- 	}
-+	
- 	debug(14, 1) ("done walking hash table...\n");
-+	*/
- }
- 
-+/*
- void
- genHashkey(hash_table *hid, const char *name)
- {
-@@ -800,9 +810,11 @@
- 	b = hid->hash(name, hid->size);
- 	hashkey[hashkey_count] = b;	
- 	hashkey_count++;
--}
-+} 
-+*/
- 
- //add by miaohong end
-+
- /*
-  *  adds a "static" entry from /etc/hosts.  
-  *  returns 0 upon success, 1 if the ip address is invalid
-@@ -844,10 +856,9 @@
-     ipcacheAddEntry(i);
-     ipcacheLockEntry(i);
- 	//add by miaohong
--	genHashkey(ip_table, name);
-+	//genHashkey(ip_table, name);
- 	//debug_walkIptables();
- 	//add by miaohong end
--	printf("---------------end--------------\n");
-     return 0;
- }
- 
-Index: src/stat.c
-===================================================================
---- src/stat.c	(revision 101206)
-+++ src/stat.c	(working copy)
-@@ -1471,23 +1471,32 @@
- }
- 
- //add by mh
-+/*
- static void releaseSource()
- {
- 	ipcacheFreeMemory();
- 	fqdncacheFreeMemory();
- }
-+*/
-+static void debugReconfig()
-+{
-+    debug_walkIptables();
-+	debug_walkfqdntables();
-+}
-+
- static void
- doReconfig(StoreEntry * s)
- {
--	initPara();
--	//prevent memory leaks
--	releaseSource();
--	ipcache_init(); 
--	fqdncache_init();
--	parseEtcHosts();
--	debug_walkIptables();
-+	debugReconfig();
-+	debug(18, 1) ("[ADD] hosts to be add...\n");
-+	parseDiffHostsAdd();
-+	debugReconfig();
-+	debug(18, 1) ("[DEL] hosts to be del...\n");
-+	parseDiffHostsDel();
-+	debugReconfig();
- }
- //add by mh end 
-+
- static void
- statClientRequests(StoreEntry * s)
- {
-Index: src/tools.c
-===================================================================
---- src/tools.c	(revision 101206)
-+++ src/tools.c	(working copy)
-@@ -1137,7 +1137,159 @@
-     return 1;
- }
- 
-+//miaohong add
-+
-+#define DIFF_HOSTS_ADD "/opt/squiddiff/etc/hosts_add"
-+#define DIFF_HOSTS_DEL "/opt/squiddiff/etc/hosts_del"
-+
-+
- void
-+parseDiffHostsDel(void)
-+{
-+    FILE *fp;
-+    char buf[1024];
-+    char buf2[512];
-+    char *nt = buf;
-+    char *lt = buf;
-+	/*
-+    if (NULL == Config.etcHostsPath)
-+	return;
-+    if (0 == strcmp(Config.etcHostsPath, "none"))
-+	return;
-+	*/
-+    fp = fopen(DIFF_HOSTS_DEL, "r");
-+    if (fp == NULL) {
-+	debug(1, 1) ("parseDiffHostsDel: %s: %s\n",
-+	    DIFF_HOSTS_DEL, xstrerror());
-+	return;
-+    }
-+#ifdef _SQUID_WIN32_
-+    setmode(fileno(fp), O_TEXT);
-+#endif
-+    while (fgets(buf, 1024, fp)) {	/* for each line */
-+	wordlist *hosts = NULL;
-+	char *addr;
-+	if (buf[0] == '#')	/* MS-windows likes to add comments */
-+	    continue;
-+	strtok(buf, "#");	/* chop everything following a comment marker */
-+	lt = buf;
-+	addr = buf;
-+	debug(1, 5) ("etc_hosts: line is '%s'\n", buf);
-+	nt = strpbrk(lt, w_space);
-+	if (nt == NULL)		/* empty line */
-+	    continue;
-+	*nt = '\0';		/* null-terminate the address */
-+	debug(1, 5) ("etc_hosts: address is '%s'\n", addr);
-+	lt = nt + 1;
-+	while ((nt = strpbrk(lt, w_space))) {
-+	    char *host = NULL;
-+	    if (nt == lt) {	/* multiple spaces */
-+		debug(1, 5) ("etc_hosts: multiple spaces, skipping\n");
-+		lt = nt + 1;
-+		continue;
-+	    }
-+	    *nt = '\0';
-+	    debug(1, 5) ("etc_hosts: got hostname '%s'\n", lt);
-+	    if (Config.appendDomain && !strchr(lt, '.')) {
-+		/* I know it's ugly, but it's only at reconfig */
-+		strncpy(buf2, lt, 512);
-+		strncat(buf2, Config.appendDomain, 512 - strlen(lt) - 1);
-+		host = buf2;
-+	    } else {
-+		host = lt;
-+	    }
-+		ipcacheDel(host);
-+
-+	    //if (ipcacheAddEntryFromHosts(host, addr) != 0)
-+		//goto skip;	/* invalid address, continuing is useless */
-+	    //wordlistAdd(&hosts, host);
-+	    lt = nt + 1;
-+		
-+	}
-+	//ipcacheDel(addr);
-+	fqdncacheDel(addr);
-+	/*
-+	fqdncacheAddEntryFromHosts(addr, hosts);
-+      skip:
-+	wordlistDestroy(&hosts);
-+	*/
-+    }
-+    fclose(fp);
-+}
-+
-+
-+
-+void
-+parseDiffHostsAdd(void)
-+{
-+    FILE *fp;
-+    char buf[1024];
-+    char buf2[512];
-+    char *nt = buf;
-+    char *lt = buf;
-+	/*
-+    if (NULL == Config.etcHostsPath)
-+	return;
-+    if (0 == strcmp(Config.etcHostsPath, "none"))
-+	return;
-+	*/
-+    fp = fopen(DIFF_HOSTS_ADD, "r");
-+    if (fp == NULL) {
-+	debug(1, 1) ("parseDiffHostsAdd: %s: %s\n",
-+	    DIFF_HOSTS_ADD, xstrerror());
-+	return;
-+    }
-+#ifdef _SQUID_WIN32_
-+    setmode(fileno(fp), O_TEXT);
-+#endif
-+    while (fgets(buf, 1024, fp)) {	/* for each line */
-+	wordlist *hosts = NULL;
-+	char *addr;
-+	if (buf[0] == '#')	/* MS-windows likes to add comments */
-+	    continue;
-+	strtok(buf, "#");	/* chop everything following a comment marker */
-+	lt = buf;
-+	addr = buf;
-+	debug(1, 5) ("etc_hosts: line is '%s'\n", buf);
-+	nt = strpbrk(lt, w_space);
-+	if (nt == NULL)		/* empty line */
-+	    continue;
-+	*nt = '\0';		/* null-terminate the address */
-+	debug(1, 5) ("etc_hosts: address is '%s'\n", addr);
-+	lt = nt + 1;
-+	while ((nt = strpbrk(lt, w_space))) {
-+	    char *host = NULL;
-+	    if (nt == lt) {	/* multiple spaces */
-+		debug(1, 5) ("etc_hosts: multiple spaces, skipping\n");
-+		lt = nt + 1;
-+		continue;
-+	    }
-+	    *nt = '\0';
-+	    debug(1, 5) ("etc_hosts: got hostname '%s'\n", lt);
-+	    if (Config.appendDomain && !strchr(lt, '.')) {
-+		/* I know it's ugly, but it's only at reconfig */
-+		strncpy(buf2, lt, 512);
-+		strncat(buf2, Config.appendDomain, 512 - strlen(lt) - 1);
-+		host = buf2;
-+	    } else {
-+		host = lt;
-+	    }
-+	    if (ipcacheAddEntryFromHosts(host, addr) != 0)
-+		goto skip;	/* invalid address, continuing is useless */
-+	    wordlistAdd(&hosts, host);
-+	    lt = nt + 1;
-+	}
-+	fqdncacheAddEntryFromHosts(addr, hosts);
-+      skip:
-+	wordlistDestroy(&hosts);
-+    }
-+    fclose(fp);
-+}
-+
-+//miaohong add end
+
+左侧基准文件夹：D:\vpc\shared\suning\squid-suning
+右侧基准文件夹：D:\vpc\shared\suning\squid-2.7.STABLE9
+
+文件：src\client_side.c
+1779,1781d1778
+< 	//miaohong add	
+< 	m_httpHeaderPutCc(hdr, http->request->cache_control);
+< 	
+1970,1975d1966
+< 	//miaohong add
+< 	//if(httpHeaderHas(hdr,HDR_CACHE_CONTROL))
+< 	//{
+< 		//printf("HDR_CACHE_CONTROL exist \n");
+< 	//}
+< 	//printf("httpHeaderGetCc : %d---\n",httpHeaderGetCc(hdr)->c_maxage);
+2764,2765d2754
+< 	//miaohong add
+< 	//printf("cc cmax: %d-----------\n",http->request->cache_control->c_maxage);
+3491,3492d3479
+< 
+< 
+3496,3497d3482
+< 	//miaohong add
+< 	//printf("-----in clientProcessRequest---\n");
+3942,3943d3926
+< 	//add miaohong
+< 	//printf("------in clientTryParseRequest----\n");
+4155d4137
+< 	//printf("--------in clientReadRequest-------\n");
+
+文件：src\enums.h
+282,283d281
+<     //miaohong add
+<     CC_C_MAXAGE,
+
+文件：src\HttpHdrCc.c
+51,52d50
+<     //miaohong add
+<     {"c-maxage", CC_C_MAXAGE},
+85,86c83
+< 	// miaohong modify
+<     cc->max_age = cc->s_maxage = cc->c_maxage = cc->max_stale = cc->stale_if_error - 1;
+---
+>     cc->max_age = cc->s_maxage = cc->max_stale = cc->stale_if_error - 1;
+152,160d148
+< 	//miaohong add
+< 	case CC_C_MAXAGE:
+< 	    if (!p || !httpHeaderParseInt(p, &cc->c_maxage)) {
+< 		debug(65, 2) ("httpHdrCcParseInit: invalid c-maxage specs near '%s'\n", item);
+< 		cc->c_maxage = -1;
+< 		EBIT_CLR(cc->mask, type);
+< 	    }
+< 	    break;
+< 		
+216,217d203
+< 	//miaohong modify
+< 	dup->c_maxage = cc->c_maxage;
+221,259d206
+< 
+< //miaohong add
+< 
+< void
+< m_httpHdrCcPackInto(const HttpHdrCc * cc, Packer * p)
+< {
+<     http_hdr_cc_type flag;
+<     int pcount = 0;
+<     assert(cc && p);
+<     for (flag = 0; flag < CC_ENUM_END; flag++) {
+< 	if (EBIT_TEST(cc->mask, flag) && flag != CC_OTHER && flag != CC_C_MAXAGE) {
+< 
+< 	    /* print option name */
+< 	    packerPrintf(p, (pcount ? ", %s" : "%s"), strBuf(CcFieldsInfo[flag].name));
+< 
+< 	    /* handle options with values */
+< 	    if (flag == CC_MAX_AGE)
+< 		packerPrintf(p, "=%d", (int) cc->c_maxage);
+< 
+< 	    if (flag == CC_S_MAXAGE)
+< 		packerPrintf(p, "=%d", (int) cc->s_maxage);
+< 		// miaohong add
+< 	    //if (flag == CC_C_MAXAGE)
+< 		//packerPrintf(p, "=%d", (int) cc->c_maxage);
+< 		
+< 	    if (flag == CC_MAX_STALE && cc->max_stale >= 0)
+< 		packerPrintf(p, "=%d", (int) cc->max_stale);
+< 
+< 	    if (flag == CC_STALE_WHILE_REVALIDATE)
+< 		packerPrintf(p, "=%d", (int) cc->stale_while_revalidate);
+< 
+< 	    pcount++;
+< 	}
+<     }
+<     if (strLen(cc->other))
+< 	packerPrintf(p, (pcount ? ", %s" : "%s"), strBuf(cc->other));
+< }
+< 
+< 
+279,282c226
+< 		// miaohong add
+< 	    if (flag == CC_C_MAXAGE)
+< 		packerPrintf(p, "=%d", (int) cc->c_maxage);
+< 		
+---
+> 
+304,306d247
+< 	// miaohong add
+< 	if (cc->c_maxage < 0)
+< 	cc->c_maxage = new_cc->c_maxage;
+336,350d276
+< //miaohong add
+< 
+< /* negative s_maxage will clean old s-maxage setting */
+< void
+< httpHdrCcSetCMaxAge(HttpHdrCc * cc, int c_maxage)
+< {
+<     assert(cc);
+<     cc->c_maxage = c_maxage;
+<     if (c_maxage >= 0)
+< 	EBIT_SET(cc->mask, CC_C_MAXAGE);
+<     else
+< 	EBIT_CLR(cc->mask, CC_C_MAXAGE);
+< }
+< 
+< 
+
+文件：src\HttpHeader.c
+570,571d569
+< 	// add miaohong
+< 	//printf("[Debug for suning] header info :  %s = %s \n",e->name.buf,e->value.buf);
+971d968
+< //miaohong add
+973,992d969
+< m_httpHeaderPutCc(HttpHeader * hdr, const HttpHdrCc * cc)
+< {
+<     MemBuf mb;
+<     Packer p;
+<     assert(hdr && cc);
+<     /* remove old directives if any */
+<     httpHeaderDelById(hdr, HDR_CACHE_CONTROL);
+<     /* pack into mb */
+<     memBufDefInit(&mb);
+<     packerToMemInit(&p, &mb);
+<     m_httpHdrCcPackInto(cc, &p);
+<     /* put */
+<     httpHeaderAddEntry(hdr, httpHeaderEntryCreate(HDR_CACHE_CONTROL, NULL, mb.buf));
+<     /* cleanup */
+<     packerClean(&p);
+<     memBufClean(&mb);
+< }
+< 
+< 
+< void
+
+文件：src\protos.h
+377,378d376
+< //miaohong add
+< extern void httpHdrCcSetCMaxAge(HttpHdrCc * cc, int s_maxage);
+
+文件：src\structs.h
+1020,1021d1019
+< 	//miaohong add
+< 	int c_maxage;
+
 
 {% endhighlight %}
 
