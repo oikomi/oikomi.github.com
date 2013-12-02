@@ -192,7 +192,7 @@ diff squid-suning/src/structs.h squid-2.7.STABLE9/src/structs.h
 
 {% highlight java %}
 
-Client -->   squid -->  nginx
+Client  -->   squid  -->  nginx
 
 {% endhighlight %}
 
@@ -213,18 +213,18 @@ location ~ /(t.html) {
                    proxy_set_header X-Forwarded-For  $remote_addr;
                    proxy_set_header  Cache-Control  max-age=100;   
                    proxy_set_header  Cache-Control  c-maxage=50;   #源站发出c-maxage头
-                   proxy_set_header   Host   doghole;
+                   proxy_set_header   Host   xx;
                    proxy_pass http://distribute.vhosts/$v; # refers to squid cluster
 }
 
 {% endhighlight %}
 
 测试结果：
-	没命中
+没命中
 
 {% highlight java %}
 
-[root@ppserver ~]# curl --head http://127.0.0.1/suning.html
+[root@ppserver ~]# curl --head http://127.0.0.1/t.html
 HTTP/1.1 200 OK
 Server: nginx/5.3
 Date: Mon, 02 Dec 2013 06:10:32 GMT
@@ -242,11 +242,11 @@ Via: 1.1 livesquid:18000 (squid/2.7.STABLE9)
 {% endhighlight %}
 
 
-	命中：
+命中：
 
 {% highlight java %}
 
-[root@ppserver ~]# curl --head http://127.0.0.1/suning.html
+[root@ppserver ~]# curl --head http://127.0.0.1/t.html
 HTTP/1.1 200 OK
 Server: nginx/5.3
 Date: Mon, 02 Dec 2013 06:15:13 GMT
