@@ -190,9 +190,16 @@ diff squid-suning/src/structs.h squid-2.7.STABLE9/src/structs.h
 
 测试环境：
 
+{% highlight java %}
+
 Client -->   squid -->  nginx
 
+{% endhighlight %}
+
 其中nginx配置如下：
+
+{% highlight java %}
+
 location ~ /true.html {
                    root /tmp;
 }
@@ -210,8 +217,13 @@ location ~ /(t.html) {
                    proxy_pass http://distribute.vhosts/$v; # refers to squid cluster
 }
 
+{% endhighlight %}
+
 测试结果：
 	没命中
+
+{% highlight java %}
+
 [root@ppserver ~]# curl --head http://127.0.0.1/suning.html
 HTTP/1.1 200 OK
 Server: nginx/5.3
@@ -227,8 +239,13 @@ X-Cache: MISS from livesquid
 X-Cache-Lookup: MISS from livesquid:18000
 Via: 1.1 livesquid:18000 (squid/2.7.STABLE9)
 
+{% endhighlight %}
+
 
 	命中：
+
+{% highlight java %}
+
 [root@ppserver ~]# curl --head http://127.0.0.1/suning.html
 HTTP/1.1 200 OK
 Server: nginx/5.3
@@ -244,8 +261,12 @@ X-Cache: HIT from livesquid
 X-Cache-Lookup: HIT from livesquid:18000
 Via: 1.1 livesquid:18000 (squid/2.7.STABLE9)
 
+{% endhighlight %}
+
 
 另外，打印squid内部信息
+
+{% highlight java %}
 
 [Debug for suning] header info :  X-Forwarded-For = 127.0.0.1
 [Debug for suning] header info :  Cache-Control = max-age=100
@@ -262,6 +283,8 @@ Via: 1.1 livesquid:18000 (squid/2.7.STABLE9)
 [Debug for suning] header info :  Connection = keep-alive
 [Debug for suning] header info :  ETag = "52986ab4-5"
 [Debug for suning] header info :  Accept-Ranges = bytes
+
+{% endhighlight %}
 
 可以看到squid内部也识别c-maxage头，另外c-maxage只是添加一个头识别，但不做语义处理，所以不会对缓存策略产生影响，影响的还是max-age
 
