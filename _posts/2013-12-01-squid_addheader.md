@@ -10,8 +10,9 @@ Squid定制开发(三)之添加修改header头
 
 
 最近有个需求，需要：
+源站会输出一个”Cache-Control c-maxage=xxx”的响应头，要求我们的CDN上遇到这样的信息，在CDN缓存仍然遵循”Cache-Control max-age=xxx”前提下，将”Cache-Control c-maxage=xxx”的内容转换为相应”Cache-Control max-age=xxx”, 输出给客户端缓存
 
-
+懒得写了，贴diff吧
 
 {% highlight java %}
 
